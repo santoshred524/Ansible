@@ -1,0 +1,27 @@
+install splunk agent:
+  
+                yum -y install splunkforwarder
+                
+Modify add the deploymentclient.conf file: 
+
+/opt/splunkforwarder/etc/system/local/deploymentclient.conf
+                Chmod 755 deploymentclient.conf 
+
+[target-broker:deploymentServer]
+targetUri = url:8089
+                
+Or  run the following command
+
+/opt/splunkforwarder/bin/splunk set deploy-poll url:8088 
+
+
+Modify/ Add the /etc/init.d/splunkd file:
+  
+                /etc/init.d/splunkd 
+                chmod 755 splunkd
+                
+start splunk daemon:
+
+systemctl enable splunkd
+systemctl start splunkd
+systemctl status splunkd
