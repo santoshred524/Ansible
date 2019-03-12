@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    SPLUNKHOME: /opt/splunkforwarder
+    HOME: /etc/init.d/
+    NEWPASS: ""
+    OLDPASS: ""
+    DEPLOYSERV: ""
+  environment:
+    SPLUNKHOME: /opt/splunkforwarder
+    HOME: /etc/init.d/
+    DEPLOYSERV: "{{ DEPLOYSERV }}"
+  tasks:
+  - name: install splunk agent
+    yum:
+      name: splunkforwarder
+      state: present
+  - name: Modify the /etc/init.d/splunkd file
+    copy:
+      src: splunkd
+      dest: /etc/init.d/splunkd
+      owner: root
+      group: root
+      mode: 0755
+      backup: yes
+  - name: start the splunk service
+    script: shell.sh "{{ NEWPASS }}" "{{ OLDPASS }}" "{{ DEPLOYSERV }}"
+    args:
+      chdir: "{{ SPLUNKHOME }}"
+  - name: start splunk daemon
+    command: systemctl start splunkd
+  - name: enable splunk daemon
+    command: systemctl enable splunkd
+  
