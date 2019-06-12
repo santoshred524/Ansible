@@ -8,7 +8,7 @@ directory '/install' do
 end
 
 remote_file '/install/endpoint.tar' do
-  source 'http://yum.sharedservices.aws.wellmark.com/misc/mcafee/endpoint.tar'
+  source ''
   owner 'root'
   group 'root'
   mode '0755'
