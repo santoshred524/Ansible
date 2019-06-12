@@ -1,0 +1,35 @@
+
+directory '/install' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+  not_if { ::File.exist?('/opt/isec') }
+end
+
+remote_file '/install/endpoint.tar' do
+  source 'http://yum.sharedservices.aws.wellmark.com/misc/mcafee/endpoint.tar'
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+  not_if { ::File.exist?('/opt/isec') }
+end
+
+execute 'extract_endpoint_tar' do
+  command 'tar xf endpoint.tar'
+  cwd '/install'
+  not_if { ::File.exist?('/opt/isec') }
+end
+
+execute 'install_endpoint' do
+  command '/install/endpoint/isectp-setup silent oasoff'
+  cwd '/install/endpoint'
+  not_if { ::File.exist?('/opt/isec') }
+end
+
+directory '/install' do
+  action :delete
+  recursive true
+  only_if { ::File.exist?('/install') }
+end
