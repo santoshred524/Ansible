@@ -1,0 +1,59 @@
+#
+# Cookbook:: mcafee
+# Recipe:: epo
+#
+# Copyright:: 2017, The Authors, All Rights Reserved.
+package 'unzip' do
+  action :install
+  not_if 'rpm -q unzip'
+end
+
+group 'mfe' do
+  gid 1002
+  action :create
+end
+
+user 'mfe' do
+  comment 'McAfee ePO'
+  uid 1002
+  gid 1002
+  home '/home/mfe'
+  shell '/sbin/nologin'
+  system true
+  action :create
+end
+
+directory '/install' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+  not_if { ::File.exist?('/opt/McAfee') }
+end
+
+remote_file '/install/epo.tar' do
+  source ''
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+  not_if { ::File.exist?('/opt/McAfee') }
+end
+
+execute 'extract_epo_tar' do
+  command 'tar xf epo.tar'
+  cwd '/install'
+  not_if { ::File.exist?('/opt/McAfee') }
+end
+
+execute 'install_epo' do
+  command '/install/epo/install.sh -i'
+  cwd '/install/epo'
+  not_if { ::File.exist?('/opt/McAfee') }
+end
+
+directory '/install' do
+  action :delete
+  recursive true
+  only_if { ::File.exist?('/install') }
+end
